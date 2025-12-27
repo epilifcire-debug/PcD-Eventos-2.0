@@ -1,0 +1,7 @@
+{
+  "homepage": "https://SEU_USUARIO.github.io/NOME_DO_REPOSITORIO",
+  "scripts": {
+    "build": "vite build",
+    "deploy": "npm run build"
+  }
+}

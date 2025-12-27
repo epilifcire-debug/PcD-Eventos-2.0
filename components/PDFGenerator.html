@@ -1,0 +1,106 @@
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { FileText, Loader2 } from 'lucide-react';
+
+export default function PDFGenerator({ pessoas, evento, loading, onGenerate }) {
+  const generatePDF = () => {
+    // Ordenar pessoas alfabeticamente
+    const pessoasOrdenadas = [...pessoas].sort((a, b) => 
+      a.nome.localeCompare(b.nome, 'pt-BR')
+    );
+    
+    // Criando o conteúdo HTML para o PDF
+    const eventTitle = evento?.nome || 'Relatório de Cadastros';
+    
+    let htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>${eventTitle}</title>
+        <style>
+          @page { margin: 2cm; }
+          body { 
+            font-family: Arial, sans-serif; 
+            font-size: 12pt;
+            line-height: 1.5;
+          }
+          h1 { 
+            text-align: center; 
+            font-size: 18pt;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+          }
+          .person-block {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+            page-break-inside: avoid;
+          }
+          .person-name {
+            font-weight: bold;
+            font-size: 13pt;
+          }
+          .person-cpf {
+            color: #333;
+          }
+          .signature-line {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+          }
+          .signature-field {
+            border-bottom: 1px solid #000;
+            width: 200px;
+            display: inline-block;
+          }
+          .date-field {
+            margin-left: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Relatório — ${eventTitle}</h1>
+    `;
+
+    pessoasOrdenadas.forEach((pessoa, index) => {
+      htmlContent += `
+        <div class="person-block">
+          <p class="person-name">${index + 1}. ${pessoa.nome}</p>
+          <p class="person-cpf">CPF: ${pessoa.cpf}</p>
+          <div class="signature-line">
+            <span>ASS: <span class="signature-field"></span></span>
+            <span class="date-field">DATA: ____/____/____</span>
+          </div>
+        </div>
+      `;
+    });
+
+    htmlContent += `
+      </body>
+      </html>
+    `;
+
+    // Abrir janela de impressão
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+
+  return (
+    <Button
+      onClick={generatePDF}
+      disabled={loading || pessoas.length === 0}
+      className="gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
+    >
+      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+      Gerar PDF
+    </Button>
+  );
+}
