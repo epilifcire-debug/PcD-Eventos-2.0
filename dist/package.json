@@ -1,7 +1,0 @@
-{
-  "homepage": "https://https://epilifcire-debug.github.io/PcD-Eventos-2.0/",
-  "scripts": {
-    "build": "vite build",
-    "deploy": "npm run build"
-  }
-}
